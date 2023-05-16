@@ -1,0 +1,135 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800">
+
+    <Window.Resources>
+        <local:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <local:RawDataToStringConverter x:Key="RawDataToStringConverter" />
+        <local:SplineDataItemTostringConverter x:Key="SplineDataItemTostringConverter" />
+        <local:TwoValuesConverter x:Key="TwoValuesConverter" />
+        <DataTemplate x:Key="key_template">
+            <TextBlock  Text="{Binding Path = Method.Name}" />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Margin="4,0,266,0"  VerticalAlignment="Top" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">
+            <Menu HorizontalAlignment="Center" Margin="1" Height="44" Width="68">
+                <MenuItem Header="File" >
+                    <MenuItem Header="Save" Click="ToSave"/>
+                </MenuItem>
+                <MenuItem Header="Execute" HorizontalAlignment="Center" Height="21" Width="64">
+                    <MenuItem Header="RawData from Controls" Click="RawDataFromControlsButton_Click"/>
+                    <MenuItem Header="RawData from File" Click="RawDataFromFileButton_Click"/>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+
+        <StackPanel Margin="4,0,266,0"  VerticalAlignment="Top" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock HorizontalAlignment="Left" Text ="Значения границ отрезка" Margin="3"  TextWrapping ="Wrap" VerticalAlignment="Top" />
+            <TextBox x:Name="SecondDerivativeTextBox" Margin="5">
+                <TextBox.Text>
+                    <MultiBinding Converter="{StaticResource TwoValuesConverter}">
+                        <Binding Path="A" />
+                        <Binding Path="B" />
+                    </MultiBinding>
+                </TextBox.Text>
+            </TextBox>
+        </StackPanel>
+
+        <StackPanel Margin="10,55,10,0"  VerticalAlignment="Top">
+            <TextBlock HorizontalAlignment="Left" Text ="Число узлов сплайна" Margin="2"  VerticalAlignment="Top" />
+            <TextBox HorizontalAlignment="Stretch" Margin="2"  VerticalAlignment="Top" 
+                     Text="{Binding N_Points, Mode=TwoWay}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Row="0" Margin="10,102,10,0" Width="NaN" Height="82" >
+            <TextBlock HorizontalAlignment="Left" Text ="Тип сетки" Margin="10"  TextWrapping ="Wrap" VerticalAlignment="Top" />
+            <RadioButton x:Name="uniformRadioButton" Content="Равномерная" 
+                         IsChecked="{Binding UniformGrid}" GroupName = "rb"/>
+            <RadioButton x:Name="nonUniformRadioButton" Content="Неравномерная"
+                         IsChecked="{Binding UniformGrid, Converter={StaticResource InverseBooleanConverter}}"  GroupName = "rb"/>
+        </StackPanel>
+
+        <StackPanel Margin="4,19,0,0"  VerticalAlignment="Top" Grid.Column="1">
+            <TextBlock HorizontalAlignment="Left" Text ="Функция для RawData" Margin="2"  VerticalAlignment="Top" />
+            <ComboBox HorizontalAlignment="Stretch" Margin="2,5,20,5"  VerticalAlignment="Top" 
+                     Name ="comboBox_Enum" SelectedItem ="{Binding fRawEnum}"/>
+        </StackPanel>
+
+        <StackPanel Margin="0,97,4,0"  VerticalAlignment="Top" Grid.Row="0" Grid.Column="1">
+            <TextBlock HorizontalAlignment="Left" Text ="Число узлов сетки, на которых вычисляются значения сплайна" Margin="5"  TextWrapping ="Wrap" VerticalAlignment="Top" />
+            <TextBox x:Name="NodesCountTextBox" Margin="5" Text="{Binding NumSplines}" />
+        </StackPanel>
+
+        <StackPanel Margin="8,10,12,0"  VerticalAlignment="Top" Grid.Row="1" Grid.Column="1">
+            <TextBlock HorizontalAlignment="Left" Text ="Первая производная на левой границе" Margin="2"  VerticalAlignment="Top" />
+            <TextBox HorizontalAlignment="Stretch" Margin="2"  VerticalAlignment="Top" 
+                     Text="{Binding lfd}"/>
+        </StackPanel>
+
+        <StackPanel Margin="10,57,10,0"  VerticalAlignment="Top" Grid.Row="1" Grid.Column="1">
+            <TextBlock HorizontalAlignment="Left" Text ="Первая производная на правой границе" Margin="2"  VerticalAlignment="Top" />
+            <TextBox HorizontalAlignment="Stretch" Margin="2"  VerticalAlignment="Top" 
+                     Text="{Binding rfd}"/>
+        </StackPanel>
+
+        <StackPanel HorizontalAlignment="Stretch" Margin="2"  VerticalAlignment="Center" Grid.Row="0" Grid.Column="2">
+            <TextBlock HorizontalAlignment="Left" Text ="Узел, значение сплайна, первая производная и вторая производная" Margin="5" TextWrapping="Wrap"  VerticalAlignment="Top" />
+            <ListBox x:Name="ListsSplineData" VerticalAlignment="Center" Height="80" ItemsSource="{Binding Path=splineData.SplineDataItems}" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Point_counted, StringFormat='{}{0:F2}'}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding Path=SplineValue, StringFormat='{}{0:F2}'}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding Path=FirstDerivative, StringFormat='{}{0:F2}'}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding Path=SecondDerivative, StringFormat='{}{0:F2}'}" Margin="0,0,5,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+
+        <StackPanel Margin="4,12,0,0"  VerticalAlignment="Top" Grid.Row="1" Grid.Column="2">
+            <TextBlock Text ="Вывод информации c листбокса:" TextWrapping="Wrap" />
+            <TextBlock x:Name="SelectedItemTextBlock" HorizontalAlignment="Left" Margin="10" TextWrapping="Wrap" VerticalAlignment="Center" 
+                       Text="{Binding SelectedItem, Converter={StaticResource SplineDataItemTostringConverter}, ElementName=ListsSplineData}" />
+        </StackPanel>
+
+        <StackPanel Margin="4,118,0,0"  VerticalAlignment="Top" Grid.Row="1" Grid.Column="2">
+            <TextBlock Text ="Значения интеграла:" TextWrapping="Wrap" />
+            <TextBlock x:Name="integralTextBlock" 
+                Text="{Binding splineData.Integral}" Margin="5" Height="23"/>
+        </StackPanel>
+
+        <StackPanel Margin="4,10,0,0"  VerticalAlignment="Top" Grid.Row="2" Grid.Column="2">
+            <TextBlock HorizontalAlignment="Left" Text ="узел и значение" Margin="5" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="0.507,-0.114" />
+            <ListBox x:Name="ListsRawData" VerticalAlignment="Center" Height ="80" ItemsSource ="{Binding rawData, Converter={StaticResource RawDataToStringConverter}}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="0">
+            <Button Content="Save" Name="SaveButton" VerticalAlignment="Top" Margin="10" Click="ToSave"/>
+            <Button Content="RawData from Controls" Name="RawDataFromControlsButton" VerticalAlignment="Center" Margin="10" Click="RawDataFromControlsButton_Click"/>
+            <Button Content="RawData from File" Name="RawDataFromFileButton" VerticalAlignment="Bottom" Margin="10" Click="RawDataFromFileButton_Click"/>
+        </StackPanel>
+
+    </Grid>
+
+
+</Window>

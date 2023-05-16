@@ -1,0 +1,6 @@
+C:\Users\af40\Desktop\hw1\Solution5\WpfApp2\obj\Debug\net7.0-windows\WpfApp2.csproj.AssemblyReference.cache
+C:\Users\af40\Desktop\hw1\Solution5\WpfApp2\obj\Debug\net7.0-windows\MainWindow.g.cs
+C:\Users\af40\Desktop\hw1\Solution5\WpfApp2\obj\Debug\net7.0-windows\App.g.cs
+C:\Users\af40\Desktop\hw1\Solution5\WpfApp2\obj\Debug\net7.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\af40\Desktop\hw1\Solution5\WpfApp2\obj\Debug\net7.0-windows\WpfApp2_MarkupCompile.cache
+C:\Users\af40\Desktop\hw1\Solution5\WpfApp2\obj\Debug\net7.0-windows\WpfApp2_MarkupCompile.lref
